@@ -9,8 +9,7 @@ from contextlib import asynccontextmanager
 
 from src.config import settings
 from src.utils.logger import get_logger
-from src.api.routes import router, initialize_services
-from src.api.routes import chatbot_service, steam_service
+from src.api.routes import router
 from src import __version__
 
 logger = get_logger()
@@ -23,23 +22,12 @@ async def lifespan(app: FastAPI):
     logger.info(f"Starting Videogames Chatbot API v{__version__}")
     logger.info(f"Environment: {settings.env}")
     logger.info(f"Debug mode: {settings.debug}")
-
-    try:
-        initialize_services()
-        logger.info("All services initialized successfully")
-    except Exception as e:
-        logger.error(f"Failed to initialize services: {e}")
-        raise
+    logger.info("Services will be initialized on first request (lazy loading)")
 
     yield
 
     # Shutdown
     logger.info("Shutting down Videogames Chatbot API")
-    if chatbot_service:
-        await chatbot_service.close()
-    if steam_service:
-        await steam_service.close()
-    logger.info("All services closed")
 
 
 # Create FastAPI app
