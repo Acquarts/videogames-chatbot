@@ -11,7 +11,7 @@ from src.api.models import (
     HealthResponse,
     KnowledgeBaseStats,
 )
-from src.services import SteamService, RAGService, ChatbotService
+from src.services import SteamService, ChatbotService
 from src.utils.logger import get_logger
 from src import __version__
 
@@ -22,7 +22,7 @@ router = APIRouter()
 
 # Initialize services (lazy initialization)
 steam_service: SteamService = None
-rag_service: RAGService = None
+rag_service = None  # Optional - may not be available
 chatbot_service: ChatbotService = None
 
 
@@ -36,12 +36,17 @@ def get_steam_service():
 
 
 def get_rag_service():
-    """Get or create RAG service instance (lazy initialization)."""
+    """Get or create RAG service instance (lazy initialization). Returns None if not available."""
     global rag_service
     if rag_service is None:
-        logger.info("Initializing RAG service...")
-        rag_service = RAGService()
-    return rag_service
+        try:
+            logger.info("Initializing RAG service...")
+            from src.services.rag_service import RAGService
+            rag_service = RAGService()
+        except Exception as e:
+            logger.warning(f"RAG service not available: {e}")
+            rag_service = False  # Mark as attempted but failed
+    return rag_service if rag_service is not False else None
 
 
 def get_chatbot_service():

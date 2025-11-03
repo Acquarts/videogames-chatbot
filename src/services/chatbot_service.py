@@ -11,7 +11,6 @@ from langchain_core.tools import tool
 from src.config import settings
 from src.utils.logger import get_logger
 from src.services.steam_service import SteamService
-from src.services.rag_service import RAGService
 
 logger = get_logger()
 
@@ -22,7 +21,15 @@ class ChatbotService:
     def __init__(self):
         """Initialize chatbot with Claude LLM."""
         self.steam_service = SteamService()
-        self.rag_service = RAGService()
+
+        # RAG is optional - skip if ChromaDB/ONNXRuntime not available
+        try:
+            from src.services.rag_service import RAGService
+            self.rag_service = RAGService()
+            logger.info("RAG service initialized")
+        except Exception as e:
+            logger.warning(f"RAG service not available (this is OK): {e}")
+            self.rag_service = None
 
         # Define tools
         self.tools = self._create_tools()
