@@ -28,5 +28,5 @@ RUN mkdir -p /app/chroma_db /app/logs
 EXPOSE 8000
 
 # Run the application
-# Railway provides $PORT environment variable
-CMD python -m uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}
+# Railway provides $PORT environment variable, app.py handles it
+CMD ["python", "app.py"]
