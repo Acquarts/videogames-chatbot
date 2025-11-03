@@ -1,22 +1,24 @@
-# Production Dockerfile optimized for Railway
+# Production Dockerfile optimized for Railway - Fast builds
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
+# Set environment variables for faster pip installs
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install only essential system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    g++ \
-    make \
-    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# Copy requirements first for Docker layer caching
 COPY requirements.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies with optimizations
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
@@ -24,9 +26,8 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p /app/chroma_db /app/logs
 
-# Expose port (Railway will override with $PORT)
+# Expose port
 EXPOSE 8000
 
-# Run the application
-# Railway provides $PORT environment variable, app.py handles it
+# Run the application (app.py handles $PORT from Railway)
 CMD ["python", "app.py"]
