@@ -77,3 +77,7 @@ data/
 *.csv
 *.json
 !config/*.json
+!package.json
+!package-lock.json
+!railway.json
+!tsconfig.json
