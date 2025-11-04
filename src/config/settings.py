@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     steam_api_key: Optional[str] = None  # Optional - most features work without it
 
     # LLM Configuration
-    claude_model: str = "claude-sonnet-4-5"
+    claude_model: str = "claude-3-5-sonnet-20240620"
     max_tokens: int = 4096
     temperature: float = 0.7
 
