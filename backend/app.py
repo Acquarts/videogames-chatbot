@@ -64,6 +64,12 @@ async def root():
     }
 
 
+@app.get("/health")
+async def health():
+    """Health check endpoint for Railway."""
+    return {"status": "healthy", "version": __version__}
+
+
 if __name__ == "__main__":
     import uvicorn
     import os
