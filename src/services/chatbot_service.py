@@ -35,12 +35,21 @@ class ChatbotService:
         self.tools = self._create_tools()
 
         # Initialize Claude with tools
-        self.llm = ChatAnthropic(
-            anthropic_api_key=settings.anthropic_api_key,
-            model=settings.claude_model,
-            max_tokens=settings.max_tokens,
-            temperature=settings.temperature,
-        ).bind_tools(self.tools)
+        logger.info(f"Initializing ChatAnthropic with model: {settings.claude_model}")
+        logger.info(f"API key present: {bool(settings.anthropic_api_key)}")
+        logger.info(f"API key prefix: {settings.anthropic_api_key[:20]}...")
+
+        try:
+            self.llm = ChatAnthropic(
+                anthropic_api_key=settings.anthropic_api_key,
+                model=settings.claude_model,
+                max_tokens=settings.max_tokens,
+                temperature=settings.temperature,
+            ).bind_tools(self.tools)
+            logger.info(f"✓ ChatAnthropic initialized successfully")
+        except Exception as e:
+            logger.error(f"✗ Failed to initialize ChatAnthropic: {e}")
+            raise
 
         # System prompt
         self.system_prompt = self._create_system_prompt()
@@ -198,8 +207,16 @@ class ChatbotService:
                 iteration += 1
 
                 # Get response from Claude
-                response = await self.llm.ainvoke(messages)
-                messages.append(response)
+                logger.info(f"Calling Claude API (iteration {iteration})...")
+                try:
+                    response = await self.llm.ainvoke(messages)
+                    logger.info(f"✓ Claude API response received")
+                    messages.append(response)
+                except Exception as e:
+                    logger.error(f"✗ Claude API call failed: {e}")
+                    logger.error(f"Error type: {type(e).__name__}")
+                    logger.error(f"Model being used: {settings.claude_model}")
+                    raise
 
                 # Check if tool calls are present
                 if not response.tool_calls:
