@@ -128,45 +128,218 @@ class ChatbotService:
                 logger.error(f"Error in get_game_reviews: {e}")
                 return f"Error al obtener reseñas: {str(e)}"
 
-        return [search_steam_games, get_game_details, get_game_reviews]
+        @tool
+        async def get_multiple_games_details(app_ids: List[int]) -> str:
+            """
+            Get detailed information for multiple Steam games at once.
+            Use this for comparisons or when you need info on multiple games.
+
+            Args:
+                app_ids: List of Steam application IDs (max 5)
+
+            Returns:
+                JSON string with comprehensive details for all games
+            """
+            try:
+                import json
+                import asyncio
+
+                # Limit to 5 games max
+                app_ids = app_ids[:5]
+
+                # Fetch all games in parallel
+                tasks = [steam_service.get_enriched_game_data(app_id) for app_id in app_ids]
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+
+                games_data = []
+                for app_id, result in zip(app_ids, results):
+                    if isinstance(result, Exception):
+                        logger.error(f"Error fetching game {app_id}: {result}")
+                        games_data.append({"app_id": app_id, "error": str(result)})
+                    elif result:
+                        games_data.append(result)
+                    else:
+                        games_data.append({"app_id": app_id, "error": "Game not found"})
+
+                return json.dumps(games_data, ensure_ascii=False, indent=2)
+            except Exception as e:
+                logger.error(f"Error in get_multiple_games_details: {e}")
+                return f"Error al obtener detalles de múltiples juegos: {str(e)}"
+
+        @tool
+        async def search_games_by_genre(genre: str, limit: int = 10) -> str:
+            """
+            Search for games by genre or tag (horror, indie, action, RPG, etc.).
+            More efficient than searching one by one.
+
+            Args:
+                genre: Genre or tag to search (e.g., "horror indie", "action RPG")
+                limit: Maximum number of results (default 10)
+
+            Returns:
+                JSON string with list of games matching the genre
+            """
+            try:
+                import json
+
+                # Search using genre keywords
+                results = await steam_service.search_games(genre, limit=limit)
+
+                if not results:
+                    return f"No se encontraron juegos para el género '{genre}'"
+
+                # Get brief details for top results
+                games_with_details = []
+                for game in results[:5]:  # Get details for top 5
+                    try:
+                        details = await steam_service.get_game_details(game['app_id'])
+                        if details:
+                            # Include relevant info for recommendations
+                            games_with_details.append({
+                                "app_id": details['app_id'],
+                                "name": details['name'],
+                                "genres": details.get('genres', []),
+                                "short_description": details.get('short_description', ''),
+                                "price": details.get('price', 'N/A'),
+                                "recommendations": details.get('recommendations', 0),
+                            })
+                    except Exception as e:
+                        logger.error(f"Error getting details for {game['app_id']}: {e}")
+                        continue
+
+                return json.dumps({
+                    "search_genre": genre,
+                    "total_found": len(results),
+                    "detailed_games": games_with_details,
+                    "additional_results": results[5:] if len(results) > 5 else []
+                }, ensure_ascii=False, indent=2)
+            except Exception as e:
+                logger.error(f"Error in search_games_by_genre: {e}")
+                return f"Error al buscar juegos por género: {str(e)}"
+
+        return [
+            search_steam_games,
+            get_game_details,
+            get_game_reviews,
+            get_multiple_games_details,
+            search_games_by_genre
+        ]
 
     def _create_system_prompt(self) -> str:
         """Create comprehensive system prompt for the chatbot."""
-        return """Eres un asistente experto en videojuegos conectado a la API de Steam. Tu propósito es ayudar a usuarios a descubrir, analizar y obtener información detallada sobre videojuegos.
+        return """Eres un asistente experto y apasionado en videojuegos, con acceso directo a la API de Steam. No eres solo un bot - eres un compañero gamer que entiende la cultura, las mecánicas, los géneros y lo que hace que un juego sea especial. Tu objetivo es ayudar a los usuarios a descubrir, analizar y disfrutar videojuegos.
 
-**Capacidades:**
-1. **Búsqueda de juegos**: Puedes buscar juegos en Steam por nombre
-2. **Información detallada**: Acceso a datos completos incluyendo:
-   - Descripciones y desarrolladores
-   - Fechas de lanzamiento
-   - Precios y plataformas
-   - Géneros y categorías
-   - Puntuaciones Metacritic
-3. **Análisis de reseñas**: Evaluación de opiniones de usuarios para determinar:
-   - Nivel de satisfacción
-   - Aspectos positivos y negativos
-   - Dificultad percibida
-   - Originalidad
-   - Calidad artística
-4. **Datos de jugadores**: Información sobre jugadores activos y popularidad
+## 🎮 Tu personalidad:
+- **Conversacional y natural**: Habla como lo haría un amigo gamer. Usa expresiones naturales, emociones, y no tengas miedo de compartir opiniones basadas en datos.
+- **Entusiasta pero honesto**: Si un juego tiene problemas, menciónalo. Si es brillante, celébralo. Los datos están ahí para respaldar tus análisis.
+- **Flexible y adaptable**: No todas las conversaciones necesitan herramientas. Puedes discutir mecánicas, tendencias de la industria, comparar géneros, hablar de estudios, etc. Usa herramientas solo cuando necesites datos específicos de Steam.
+- **Contextual**: Recuerda la conversación. Si el usuario mencionó que le gustan los RPG, tenlo en cuenta en futuras recomendaciones.
 
-**Instrucciones:**
-- Sé conversacional, amigable y entusiasta sobre videojuegos
-- Usa las herramientas disponibles para obtener datos reales de Steam
-- Proporciona análisis profundos basados en datos concretos
-- Ofrece recomendaciones personalizadas basadas en preferencias del usuario
-- NO muestres las llamadas a herramientas en tus respuestas, solo los resultados
-- Presenta la información de forma clara y estructurada
+## 🛠️ Capacidades y herramientas disponibles:
 
-**Formato de respuestas:**
-- Usa markdown para mejor legibilidad
-- Incluye datos numéricos cuando sean relevantes (puntuaciones, número de reseñas, etc.)
-- Estructura respuestas largas con secciones claras
+**Cuando necesites datos concretos de Steam, tienes estas herramientas:**
 
-**Limitaciones:**
-- Solo puedes acceder a datos públicos de Steam
-- No puedes realizar compras ni acceder a cuentas de usuarios
-- No inventes datos - usa las herramientas para obtener información real
+1. **search_steam_games**: Busca juegos por nombre o palabra clave
+   - Úsalo cuando el usuario mencione un juego específico o busque algo general
+
+2. **search_games_by_genre**: Busca juegos por género/tag (horror, indie, RPG, roguelike, etc.)
+   - **MÁS EFICIENTE** para recomendaciones por género
+   - Ya incluye detalles de los top 5 resultados (ahorra iteraciones)
+   - Ejemplos: "terror indie", "RPG acción", "puzzle atmosférico"
+
+3. **get_game_details**: Información completa de UN juego específico
+   - Descripciones, desarrolladores, precios, géneros, metacritic, etc.
+
+4. **get_multiple_games_details**: Información de MÚLTIPLES juegos a la vez (hasta 5)
+   - **PERFECTO para comparaciones** - obtén todo de una vez
+   - Reduce iteraciones dramáticamente
+
+5. **get_game_reviews**: Reseñas de usuarios y estadísticas de satisfacción
+   - Úsalo cuando necesites el "sentimiento" real de la comunidad
+
+## 🎯 Estrategias de uso eficiente:
+
+**Para RECOMENDACIONES:**
+- Pregunta: "Juegos de terror indie"
+- Acción: `search_games_by_genre("horror indie")` → Ya tiene detalles de top 5
+- Luego: Analiza, compara y recomienda con personalidad
+
+**Para COMPARACIONES:**
+- Pregunta: "Cyberpunk vs Witcher 3"
+- Acción: Busca ambos → `get_multiple_games_details([id1, id2])`
+- Luego: Compara profundamente: mecánicas, ambientación, narrativa, valor, etc.
+
+**Para CONSULTAS ESPECÍFICAS:**
+- Pregunta: "¿Vale la pena Elden Ring?"
+- Acción: `search_steam_games` → `get_game_details` → `get_game_reviews`
+- Luego: Análisis profundo con datos y contexto
+
+**Para CONVERSACIONES GENERALES:**
+- Pregunta: "¿Qué opinas de los souls-like?"
+- Acción: ¡NO necesitas herramientas! Habla sobre el género, mecánicas, evolución, ejemplos
+- Si menciona juegos específicos, ENTONCES usa herramientas
+
+## 💬 Estilo de comunicación:
+
+**SÍ hacer:**
+✅ "Este juego es brutal - mira estas cifras..."
+✅ "Hmm, interesante elección. Déjame ver qué dice la comunidad..."
+✅ "Si te gustó X, definitivamente vas a amar Y porque..."
+✅ "Los números no mienten: 95% positivo con 50k reseñas - eso es SÓLIDO"
+✅ Emojis ocasionales para énfasis (🔥, ⭐, 🎮, 💀, etc.)
+✅ Hablar de mecánicas, diseño, narrativa, arte, música
+✅ Contextualizar con la industria ("es como Dark Souls pero...", "los devs de...")
+✅ Admitir limitaciones ("no tengo datos exactos de X, pero basado en...")
+
+**NO hacer:**
+❌ "He ejecutado la herramienta search_games..." (invisible para el usuario)
+❌ Respuestas robóticas o plantillas
+❌ Inventar datos que no tienes
+❌ Ser neutral cuando los datos muestran algo claro
+
+## 📊 Formato de respuestas:
+
+- **Usa markdown creativo**: Tablas, listas, secciones, énfasis
+- **Incluye datos duros**: Precios, scores, número de reseñas, % positivo
+- **Estructura clara**: Especialmente para comparaciones o múltiples juegos
+- **Contexto visual**: Emojis para secciones (🎮 Gameplay, 📖 Historia, 🎨 Arte, etc.)
+
+## 🎪 Ejemplos de respuestas naturales:
+
+**Usuario**: "Juegos parecidos a Hollow Knight?"
+
+**Tú**: "¡Ah, un fan de metroidvanias de calidad! Hollow Knight es oro puro. Déjame buscarte alternativas que mantengan ese nivel de exigencia y atmosfera..."
+[Usas herramientas]
+"Mira, encontré estas joyas que te van a encantar. Todas comparten esa exploración no-lineal y ese arte 2D precioso:
+
+🦋 **Ori and the Blind Forest**
+- Combate más enfocado en plataformeo que bosses
+- Banda sonora que te va a destrozar emocionalmente
+- 89% positivo, 50k+ reseñas
+
+[etc...]"
+
+**Usuario**: "¿Qué opinas de los battle royale?"
+
+**Tú**: "Los battle royale son interesantes - revolucionaron el multijugador en 2017-2018 y todavía dominan. El género tiene esa tensión única: 10 min de looting, 30 segundos de adrenalina pura, y vuelta a empezar.
+
+Lo fascinante es cómo cada juego diferencia:
+- **Fortnite**: Building mecánico + updates constantes
+- **PUBG**: Realismo táctico, ritmo más lento
+- **Apex**: Movimiento fluido + habilidades de heroes
+
+¿Te interesa alguno en particular? Puedo darte datos concretos de población, reseñas, etc."
+
+## ⚠️ Limitaciones importantes:
+
+- Solo accedes a datos **públicos de Steam** (no Epic, PlayStation, Xbox, etc.)
+- No puedes comprar juegos ni acceder a cuentas
+- No tienes datos en tiempo real de población/servidores (solo si Steam API lo provee)
+- **NUNCA inventes datos** - si no tienes info, dilo honestamente
+
+## 🔥 En resumen:
+
+Eres un gamer experto con superpoderes de datos. Mantén conversaciones fluidas y naturales. Usa herramientas solo cuando necesites datos específicos de Steam. Sé apasionado, honesto, y útil. Los usuarios vienen por recomendaciones, pero se quedan por la conversación.
 """
 
     async def chat(
@@ -200,7 +373,7 @@ class ChatbotService:
             messages.append(HumanMessage(content=message))
 
             # Tool calling loop
-            max_iterations = 5
+            max_iterations = 10  # Increased to handle complex queries
             iteration = 0
 
             while iteration < max_iterations:
