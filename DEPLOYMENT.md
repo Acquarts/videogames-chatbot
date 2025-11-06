@@ -1,11 +1,19 @@
 # 🚀 Guía de Despliegue
 
-Esta guía cubre el despliegue del Videogames Chatbot en diferentes plataformas.
+Esta guía cubre el despliegue del Videogames Chatbot (Frontend + Backend) en Railway.
+
+## 🎉 Estado Actual
+
+**¡EL PROYECTO YA ESTÁ DESPLEGADO EN RAILWAY!**
+
+- **Frontend**: https://videogames-chatbot-frontend.up.railway.app
+- **Backend API**: https://videogames-chatbot-production.up.railway.app
+- **Documentación API**: https://videogames-chatbot-production.up.railway.app/docs
 
 ## 📋 Tabla de Contenidos
 
-- [Railway (Recomendado para empezar)](#railway)
-- [AWS ECS/Fargate (Para producción enterprise)](#aws-ecsfargate)
+- [Railway (Actualmente en uso)](#railway)
+- [Redesplegar cambios](#redesplegar-cambios-en-railway)
 - [Variables de Entorno](#variables-de-entorno)
 - [Troubleshooting](#troubleshooting)
 
@@ -13,351 +21,133 @@ Esta guía cubre el despliegue del Videogames Chatbot en diferentes plataformas.
 
 ## Railway
 
-Railway es la opción más simple y rápida para desplegar el chatbot.
+Railway es la opción más simple y rápida. **Ya está configurado y funcionando.**
 
-### Requisitos
+### Arquitectura Actual en Railway
 
-- Cuenta en [Railway.app](https://railway.app)
-- Repository en GitHub
-- API Keys (Steam y Anthropic)
+El proyecto está dividido en **dos servicios independientes**:
 
-### Paso a Paso
+1. **Backend Service**:
+   - Directorio: `backend/`
+   - Puerto: 8000
+   - URL: https://videogames-chatbot-production.up.railway.app
 
-#### 1. Preparar el Repositorio
+2. **Frontend Service**:
+   - Directorio: `frontend/`
+   - Puerto: 3000
+   - URL: https://videogames-chatbot-frontend.up.railway.app
 
-```bash
-# Asegúrate de que todos los archivos estén commiteados
-git add .
-git commit -m "Prepare for Railway deployment"
-git push origin main
-```
+### Variables de Entorno Configuradas
 
-#### 2. Crear Proyecto en Railway
-
-**Opción A: Desde la Web**
-
-1. Ve a [railway.app](https://railway.app) y haz login
-2. Click en "New Project"
-3. Selecciona "Deploy from GitHub repo"
-4. Autoriza Railway para acceder a tu GitHub
-5. Selecciona el repositorio `videogames-chatbot`
-6. Railway detectará automáticamente el `Dockerfile`
-
-**Opción B: Desde CLI**
-
-```bash
-# Instalar Railway CLI
-npm install -g @railway/cli
-
-# Login
-railway login
-
-# Inicializar proyecto
-railway init
-
-# Linkear con proyecto existente o crear nuevo
-railway link
-```
-
-#### 3. Configurar Variables de Entorno
-
-En el dashboard de Railway:
-
-1. Ve a tu proyecto
-2. Click en "Variables"
-3. Agrega las siguientes variables:
+#### Backend Service
 
 ```env
-ANTHROPIC_API_KEY=your_claude_api_key_here
-STEAM_API_KEY=your_steam_api_key_here
+ANTHROPIC_API_KEY=sk-ant-api03-***  # Claude API Key
 ENV=production
 DEBUG=False
 LOG_LEVEL=INFO
-CLAUDE_MODEL=claude-3-5-sonnet-20241022
+CLAUDE_MODEL=claude-sonnet-4-5
 MAX_TOKENS=4096
 TEMPERATURE=0.7
 PORT=8000
 ```
 
-#### 4. Agregar Redis (Opcional pero recomendado)
+#### Frontend Service
 
-1. En tu proyecto de Railway, click en "+ New"
-2. Selecciona "Database" → "Redis"
-3. Railway creará automáticamente la variable `REDIS_URL`
+```env
+NEXT_PUBLIC_API_URL=https://videogames-chatbot-production.up.railway.app
+```
 
-#### 5. Desplegar
+### Notas Importantes
 
-**Desde Web:**
-Railway desplegará automáticamente al hacer push a la rama configurada.
+- **ChromaDB/RAG deshabilitado**: ONNXRuntime tiene problemas de kernel en Railway
+- **Redis opcional**: No es crítico, el sistema funciona sin él
+- **Steam API Key**: Opcional, la mayoría de funciones trabajan sin ella
 
-**Desde CLI:**
+## Redesplegar Cambios en Railway
+
+### Opción 1: Automático (Recomendado)
+
+Railway está conectado al repositorio de GitHub. Cualquier push a `main` triggerea un redeploy automático.
+
 ```bash
+git add .
+git commit -m "Update: descripción del cambio"
+git push origin main
+```
+
+Railway detectará el cambio y redesplegará automáticamente ambos servicios.
+
+### Opción 2: Manual con Railway CLI
+
+```bash
+# Instalar Railway CLI (solo primera vez)
+npm install -g @railway/cli
+
+# Login
+railway login
+
+# Link al proyecto existente
+railway link
+
+# Ver servicios disponibles
+railway status
+
+# Desplegar backend
+cd backend
+railway up
+
+# Desplegar frontend
+cd ../frontend
 railway up
 ```
 
-#### 6. Verificar Despliegue
+### Verificar Deploy
 
 ```bash
-# Obtener URL de la aplicación
-railway domain
+# Health check del backend
+curl https://videogames-chatbot-production.up.railway.app/api/v1/health
 
-# Verificar logs
+# Ver logs del backend
 railway logs
 
-# Test de health check
-curl https://tu-app.railway.app/api/v1/health
+# Abrir frontend en el navegador
+open https://videogames-chatbot-frontend.up.railway.app
 ```
 
-### Configuración de Dominio Personalizado
+### Configuración de Dominio Personalizado (Opcional)
 
-1. En Railway, ve a "Settings" → "Domains"
-2. Click en "Custom Domain"
-3. Agrega tu dominio
-4. Configura los registros DNS según las instrucciones
+1. En Railway, selecciona el servicio (backend o frontend)
+2. Ve a "Settings" → "Domains"
+3. Click en "Custom Domain"
+4. Agrega tu dominio (ej: `api.tudominio.com` para backend)
+5. Configura los registros DNS según las instrucciones de Railway
 
 ### Costos Estimados en Railway
 
-- **Starter**: Gratis hasta $5 de uso
-- **Developer**: ~$5-20/mes (incluye $5 de crédito)
-- **Team**: ~$20-100/mes (dependiendo del uso)
+Para este proyecto (Frontend + Backend):
 
-Estimación para este proyecto:
-- App (1 instancia): ~$5-10/mes
-- Redis: ~$2-3/mes
-- **Total: ~$7-13/mes**
+- **Backend**: ~$5-10/mes
+- **Frontend**: ~$5-8/mes
+- **Total estimado**: ~$10-18/mes
 
----
-
-## AWS ECS/Fargate
-
-Para despliegues de producción con alto tráfico y necesidad de escalabilidad.
-
-### Requisitos
-
-- Cuenta de AWS
-- AWS CLI configurado
-- Docker instalado localmente
-- Terraform o CloudFormation (opcional)
-
-### Arquitectura AWS
-
-```
-┌─────────────┐
-│  Route 53   │  (DNS)
-└──────┬──────┘
-       │
-┌──────▼──────┐
-│     ALB     │  (Load Balancer)
-└──────┬──────┘
-       │
-┌──────▼──────────────┐
-│   ECS Fargate       │
-│  ┌──────────────┐   │
-│  │ Container 1  │   │
-│  │ Container 2  │   │
-│  └──────────────┘   │
-└──────┬──────────────┘
-       │
-┌──────▼──────┐
-│ ElastiCache │  (Redis)
-│   (Redis)   │
-└─────────────┘
-       │
-┌──────▼──────┐
-│     S3      │  (Chroma DB backups)
-└─────────────┘
-```
-
-### Paso a Paso
-
-#### 1. Crear repositorio ECR
-
-```bash
-# Crear repositorio
-aws ecr create-repository --repository-name videogames-chatbot
-
-# Login a ECR
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
-```
-
-#### 2. Build y Push de la Imagen
-
-```bash
-# Build
-docker build -t videogames-chatbot .
-
-# Tag
-docker tag videogames-chatbot:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/videogames-chatbot:latest
-
-# Push
-docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/videogames-chatbot:latest
-```
-
-#### 3. Crear Cluster ECS
-
-```bash
-aws ecs create-cluster --cluster-name videogames-chatbot-cluster
-```
-
-#### 4. Crear Task Definition
-
-Crea un archivo `task-definition.json`:
-
-```json
-{
-  "family": "videogames-chatbot",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "512",
-  "memory": "1024",
-  "containerDefinitions": [
-    {
-      "name": "videogames-chatbot",
-      "image": "<account-id>.dkr.ecr.us-east-1.amazonaws.com/videogames-chatbot:latest",
-      "portMappings": [
-        {
-          "containerPort": 8000,
-          "protocol": "tcp"
-        }
-      ],
-      "environment": [
-        {"name": "ENV", "value": "production"},
-        {"name": "DEBUG", "value": "False"},
-        {"name": "LOG_LEVEL", "value": "INFO"}
-      ],
-      "secrets": [
-        {
-          "name": "ANTHROPIC_API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:region:account-id:secret:anthropic-key"
-        },
-        {
-          "name": "STEAM_API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:region:account-id:secret:steam-key"
-        }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/videogames-chatbot",
-          "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "ecs"
-        }
-      }
-    }
-  ]
-}
-```
-
-Registrar task:
-
-```bash
-aws ecs register-task-definition --cli-input-json file://task-definition.json
-```
-
-#### 5. Configurar Secrets Manager
-
-```bash
-# Guardar API keys en Secrets Manager
-aws secretsmanager create-secret \
-    --name anthropic-api-key \
-    --secret-string "your_claude_api_key"
-
-aws secretsmanager create-secret \
-    --name steam-api-key \
-    --secret-string "your_steam_api_key"
-```
-
-#### 6. Crear ElastiCache (Redis)
-
-```bash
-aws elasticache create-cache-cluster \
-    --cache-cluster-id videogames-chatbot-cache \
-    --cache-node-type cache.t3.micro \
-    --engine redis \
-    --num-cache-nodes 1
-```
-
-#### 7. Crear Application Load Balancer
-
-```bash
-# Crear Load Balancer
-aws elbv2 create-load-balancer \
-    --name videogames-chatbot-alb \
-    --subnets subnet-xxxx subnet-yyyy \
-    --security-groups sg-xxxx
-
-# Crear Target Group
-aws elbv2 create-target-group \
-    --name videogames-chatbot-tg \
-    --protocol HTTP \
-    --port 8000 \
-    --vpc-id vpc-xxxx \
-    --target-type ip \
-    --health-check-path /api/v1/health
-```
-
-#### 8. Crear ECS Service
-
-```bash
-aws ecs create-service \
-    --cluster videogames-chatbot-cluster \
-    --service-name videogames-chatbot-service \
-    --task-definition videogames-chatbot:1 \
-    --desired-count 2 \
-    --launch-type FARGATE \
-    --network-configuration "awsvpcConfiguration={subnets=[subnet-xxxx,subnet-yyyy],securityGroups=[sg-xxxx],assignPublicIp=ENABLED}" \
-    --load-balancers "targetGroupArn=arn:aws:elasticloadbalancing:...,containerName=videogames-chatbot,containerPort=8000"
-```
-
-#### 9. Configurar Auto Scaling
-
-```bash
-# Registrar target
-aws application-autoscaling register-scalable-target \
-    --service-namespace ecs \
-    --resource-id service/videogames-chatbot-cluster/videogames-chatbot-service \
-    --scalable-dimension ecs:service:DesiredCount \
-    --min-capacity 2 \
-    --max-capacity 10
-
-# Crear policy de scaling
-aws application-autoscaling put-scaling-policy \
-    --service-namespace ecs \
-    --resource-id service/videogames-chatbot-cluster/videogames-chatbot-service \
-    --scalable-dimension ecs:service:DesiredCount \
-    --policy-name cpu-scaling-policy \
-    --policy-type TargetTrackingScaling \
-    --target-tracking-scaling-policy-configuration file://scaling-policy.json
-```
-
-### Costos Estimados en AWS
-
-Para tráfico moderado (~10,000 requests/día):
-
-- **Fargate** (2 tasks, 0.5 vCPU, 1GB): ~$30-40/mes
-- **ALB**: ~$20-25/mes
-- **ElastiCache** (t3.micro): ~$15/mes
-- **Data Transfer**: ~$5-10/mes
-- **CloudWatch Logs**: ~$5/mes
-- **Secrets Manager**: ~$0.80/mes
-- **ECR**: ~$1/mes
-
-**Total estimado: ~$75-100/mes**
-
-Para escalar a 100,000+ requests/día: ~$300-500/mes
+Railway incluye:
+- $5 de crédito gratis mensual en el plan Hobby
+- Escalado automático
+- SSL/HTTPS incluido
+- Builds automáticos desde GitHub
 
 ---
 
 ## Variables de Entorno
 
-### Requeridas
+### Backend (Requeridas)
 
 ```env
 ANTHROPIC_API_KEY=sk-ant-xxxxx  # API key de Claude (Anthropic)
-STEAM_API_KEY=xxxxx              # API key de Steam
 ```
 
-### Opcionales
+### Backend (Opcionales)
 
 ```env
 # Application
@@ -368,155 +158,227 @@ LOG_LEVEL=INFO                    # DEBUG | INFO | WARNING | ERROR
 
 # Server
 HOST=0.0.0.0
-PORT=8000                        # Railway usa $PORT automáticamente
+PORT=8000
 
 # LLM
-CLAUDE_MODEL=claude-3-5-sonnet-20241022
+CLAUDE_MODEL=claude-sonnet-4-5
 MAX_TOKENS=4096
 TEMPERATURE=0.7
 
-# ChromaDB
-CHROMA_PERSIST_DIR=./chroma_db
-
-# Redis (opcional)
-REDIS_URL=redis://localhost:6379
-CACHE_TTL=3600
-
-# Steam API
+# Steam API (opcional, funciona sin ella)
+STEAM_API_KEY=xxxxx
 STEAM_API_BASE_URL=https://api.steampowered.com
 STEAM_STORE_API_URL=https://store.steampowered.com/api
+```
+
+### Frontend (Requeridas)
+
+```env
+NEXT_PUBLIC_API_URL=https://videogames-chatbot-production.up.railway.app
+```
+
+En desarrollo local:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
 ---
 
 ## Troubleshooting
 
-### Errores Comunes
+### Errores Comunes en Railway
 
-#### 1. "ChromaDB collection not found"
+#### 1. Backend Build Failed
 
-**Solución:**
+**Posibles causas**:
+- Dependencias faltantes en `requirements.txt`
+- Python version incorrecta
+
+**Solución**:
 ```bash
-# Asegúrate de que el directorio chroma_db tenga permisos correctos
-chmod -R 755 chroma_db
+# Verifica que requirements.txt esté actualizado
+pip freeze > requirements.txt
 
-# O en Docker, monta el volumen correctamente
-docker run -v $(pwd)/chroma_db:/app/chroma_db videogames-chatbot
+# Commit y push
+git add requirements.txt
+git commit -m "Update requirements.txt"
+git push origin main
 ```
 
-#### 2. "Redis connection failed"
+#### 2. Frontend Build Failed
 
-**Solución:**
-- Verifica que `REDIS_URL` esté configurado correctamente
-- El sistema funciona sin Redis (fallback a memoria), pero con menor rendimiento
-- En Railway: asegúrate de haber agregado el servicio de Redis
+**Posibles causas**:
+- Dependencias faltantes
+- Variables de entorno no configuradas
 
-#### 3. "Rate limit exceeded" en Steam API
+**Solución**:
+1. Verifica que `NEXT_PUBLIC_API_URL` esté configurada en Railway
+2. Revisa los logs de Railway
+3. Asegúrate de que `package.json` tenga el script de build:
+   ```json
+   "scripts": {
+     "build": "next build",
+     "start": "next start"
+   }
+   ```
 
-**Solución:**
-- Steam limita a 100,000 requests/día
-- El sistema tiene caché para mitigar esto
-- Considera implementar un rate limiter en la API
+#### 3. CORS Errors
 
-#### 4. "Out of memory" en contenedor
+**Solución**:
+- Verifica que el backend tenga CORS habilitado (ya está configurado en `main.py`)
+- Verifica que el frontend use la URL correcta del backend
+- En Railway, verifica `NEXT_PUBLIC_API_URL` en las variables de entorno
 
-**Solución:**
+#### 4. API Returns 500 Errors
+
+**Solución**:
 ```bash
-# Aumenta memoria en Railway
-# Settings → Resources → Memory: 1GB → 2GB
+# Ver logs del backend en Railway
+railway logs --service backend
 
-# En AWS Fargate
-# Modifica task definition: "memory": "2048"
+# O desde el dashboard de Railway
+# Projects → videogames-chatbot → backend → Deployments → View logs
 ```
 
-#### 5. Health check failing
+Verifica:
+- `ANTHROPIC_API_KEY` está configurada correctamente
+- El modelo `claude-sonnet-4-5` es válido
+- No hay errores de importación de módulos
 
-**Solución:**
-```bash
-# Verifica que el endpoint responda
-curl http://localhost:8000/api/v1/health
+#### 5. "Rate limit exceeded" en Steam API
 
-# Revisa logs
-railway logs  # Railway
-aws logs tail /ecs/videogames-chatbot --follow  # AWS
-```
+**Solución**:
+- Steam limita requests por IP
+- El sistema ya tiene caché implementado
+- Si el error persiste, considera agregar un Steam API Key en las variables de entorno
 
 ### Monitoring y Logs
 
-#### Railway
+#### Ver Logs en Railway
 
 ```bash
-# Ver logs en tiempo real
+# Desde CLI
 railway logs
 
-# Ver logs específicos
-railway logs --service videogames-chatbot
+# Logs específicos del servicio
+railway logs --service backend
+railway logs --service frontend
+
+# Logs en tiempo real
+railway logs --follow
 ```
 
-#### AWS
+#### Desde Railway Dashboard
+
+1. Ve a tu proyecto en Railway
+2. Selecciona el servicio (backend o frontend)
+3. Click en "Deployments"
+4. Click en el deployment activo
+5. Ver logs en tiempo real
+
+### Health Checks
+
+#### Backend Health Check
 
 ```bash
-# CloudWatch Logs
-aws logs tail /ecs/videogames-chatbot --follow
-
-# Métricas ECS
-aws cloudwatch get-metric-statistics \
-    --namespace AWS/ECS \
-    --metric-name CPUUtilization \
-    --dimensions Name=ServiceName,Value=videogames-chatbot-service \
-    --start-time 2024-01-01T00:00:00Z \
-    --end-time 2024-01-02T00:00:00Z \
-    --period 3600 \
-    --statistics Average
+curl https://videogames-chatbot-production.up.railway.app/api/v1/health
 ```
 
-### Performance Tuning
+Respuesta esperada:
+```json
+{
+  "status": "healthy",
+  "version": "1.0.0"
+}
+```
 
-#### 1. Optimizar caché
+#### Frontend Health Check
 
-```python
-# En .env
+Simplemente abre:
+```
+https://videogames-chatbot-frontend.up.railway.app
+```
+
+Deberías ver la interfaz del chatbot.
+
+### Performance Tips
+
+#### 1. Optimizar Tiempos de Respuesta
+
+```env
+# En backend .env
 CACHE_TTL=7200  # 2 horas para datos de juegos
 ```
 
-#### 2. Ajustar workers de Uvicorn
+#### 2. Monitorear Uso de Recursos
 
-```bash
-# En Dockerfile o comando de inicio
-uvicorn src.main:app --workers 4 --host 0.0.0.0 --port 8000
-```
+En Railway Dashboard:
+- Metrics → CPU Usage
+- Metrics → Memory Usage
+- Metrics → Request Volume
 
-#### 3. Configurar connection pooling
-
-```python
-# En steam_service.py ya está configurado httpx.AsyncClient
-# Para múltiples workers, considera usar un pool compartido
-```
+Si el uso es alto constantemente, considera:
+- Aumentar recursos en Railway (Settings → Resources)
+- Optimizar queries a la Steam API
+- Implementar más caché
 
 ---
 
-## Migración Railway → AWS
+## Nuevo Deploy desde Cero
 
-Cuando necesites escalar:
+Si necesitas deployar el proyecto a una nueva cuenta de Railway:
 
-1. **Exportar ChromaDB**
-   ```bash
-   # Backup de la base de datos vectorial
-   tar -czf chroma_backup.tar.gz chroma_db/
-   aws s3 cp chroma_backup.tar.gz s3://your-bucket/backups/
-   ```
+### 1. Preparar Repositorio
 
-2. **Replicar variables de entorno**
-   - Exporta variables de Railway
-   - Impórtalas a AWS Secrets Manager
+```bash
+# Clonar o tener el repositorio listo
+git clone https://github.com/Acquarts/videogames-chatbot.git
+cd videogames-chatbot
+```
 
-3. **Configurar dominio**
-   - Apunta tu dominio al nuevo ALB de AWS
-   - Configura SSL con ACM (AWS Certificate Manager)
+### 2. Crear Proyecto en Railway
 
-4. **Testing**
-   - Prueba exhaustivamente en staging
-   - Usa Blue-Green deployment para cero downtime
+1. Ve a [railway.app](https://railway.app)
+2. Login con GitHub
+3. New Project → Deploy from GitHub repo
+4. Selecciona `videogames-chatbot`
+
+### 3. Configurar Backend Service
+
+1. Railway detectará el directorio `backend/`
+2. Configura variables de entorno:
+   - `ANTHROPIC_API_KEY`
+   - `ENV=production`
+   - `DEBUG=False`
+   - `CLAUDE_MODEL=claude-sonnet-4-5`
+3. Railway automáticamente:
+   - Detectará `requirements.txt`
+   - Instalará dependencias
+   - Ejecutará el comando de start
+
+### 4. Configurar Frontend Service
+
+1. Agrega un nuevo servicio al proyecto
+2. Selecciona el mismo repositorio
+3. Configura el directorio raíz como `frontend/`
+4. Configura variables de entorno:
+   - `NEXT_PUBLIC_API_URL=<backend-url>` (copia la URL del backend)
+5. Railway automáticamente:
+   - Detectará `package.json`
+   - Ejecutará `npm install`
+   - Ejecutará `npm run build`
+   - Iniciará con `npm start`
+
+### 5. Verificar Deploy
+
+```bash
+# Backend
+curl <backend-url>/api/v1/health
+
+# Frontend
+open <frontend-url>
+```
 
 ---
 
@@ -524,9 +386,22 @@ Cuando necesites escalar:
 
 Si tienes problemas:
 
-1. Revisa los logs
-2. Verifica variables de entorno
-3. Consulta la documentación de Steam API y Anthropic
-4. Abre un issue en GitHub
+1. **Revisa los logs en Railway**
+   ```bash
+   railway logs --follow
+   ```
 
-**¡Listo para desplegar!** 🚀
+2. **Verifica variables de entorno**
+   - Railway Dashboard → Project → Service → Variables
+
+3. **Consulta documentación**:
+   - [Railway Docs](https://docs.railway.app/)
+   - [FastAPI Docs](https://fastapi.tiangolo.com/)
+   - [Next.js Docs](https://nextjs.org/docs)
+
+4. **Abre un issue en GitHub**:
+   https://github.com/Acquarts/videogames-chatbot/issues
+
+---
+
+**¡Proyecto desplegado exitosamente!** 🚀

@@ -2,143 +2,206 @@
 
 ## ✅ Estado del Proyecto
 
-**TU CHATBOT ESTA LISTO PARA USAR SIN STEAM API KEY**
+**CHATBOT DE VIDEOJUEGOS CON FRONTEND Y BACKEND COMPLETOS - DESPLEGADO EN RAILWAY**
 
-## 🎯 ¿Que tienes funcionando?
+## 🎯 ¿Qué tienes funcionando?
 
-### ✅ FUNCIONANDO (sin Steam API key):
-- **Buscar juegos** en Steam ✅
-- **Información completa** de juegos (precio, fecha, géneros) ✅
-- **Reseñas de usuarios** ✅
-- **Análisis con IA** (Claude) sobre satisfacción, dificultad, etc. ✅
-- **Contador de jugadores** activos ✅ (la mayoría de juegos)
-- **RAG** - Memoria persistente de juegos ✅
+### ✅ BACKEND (FastAPI + Claude Sonnet 4.5):
+- **Búsqueda de juegos** en Steam API ✅
+- **Información completa** de juegos (precio, fecha, géneros, descripciones) ✅
+- **Reseñas y análisis** de usuarios ✅
+- **IA conversacional avanzada** (Claude Sonnet 4.5) con 5 herramientas especializadas ✅
+- **Contador de jugadores** activos ✅
+- **Comparaciones de juegos** (múltiples juegos a la vez) ✅
+- **Búsqueda por género** optimizada ✅
+- **API REST completa** con documentación automática ✅
 
-### ⚠️ LIMITADO (necesita Steam API key):
-- **Contador de jugadores** para ALGUNOS juegos
+### ✅ FRONTEND (Next.js 15 + React 18):
+- **Interfaz de chat moderna** con diseño responsive ✅
+- **Markdown rendering** para respuestas formateadas ✅
+- **Historial de conversación** persistente ✅
+- **Scroll automático** y UX optimizada ✅
+- **Integración completa** con backend API ✅
+
+### ⚠️ DESHABILITADO (por compatibilidad Railway):
+- **ChromaDB/RAG** - Deshabilitado por problemas de kernel con ONNXRuntime en Railway
+- **Redis** - Opcional, no crítico
 
 ## 📝 Configuración Actual
 
 Tu archivo `.env` está configurado con:
-- ✅ **Anthropic API Key** (Claude) - LISTO
-- ⚠️ **Steam API Key** - Comentada (funciona sin ella)
+- ✅ **Anthropic API Key** (Claude Sonnet 4.5) - LISTO
+- ⚠️ **Steam API Key** - OPCIONAL (la mayoría de funciones trabajan sin ella)
 
 ## 🏃 Para Ejecutar AHORA
 
-### Paso 1: Abre tu terminal
+### Opción A: Usar la versión desplegada (Recomendado)
+
+**Backend API**: https://videogames-chatbot-production.up.railway.app
+**Frontend Web**: https://videogames-chatbot-frontend.up.railway.app
+
+¡Ya está funcionando en producción! Solo abre el frontend y empieza a chatear.
+
+### Opción B: Ejecutar localmente
+
+#### Backend:
 
 ```bash
-cd "c:\Users\infoa\Documents\Adri\Diseno\Data Science\VIDEOGAMES CHATBOT\videogames-chatbot"
-```
+cd backend
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
 
-### Paso 2: Ejecuta el servidor
-
-```bash
+pip install -r requirements.txt
 python -m uvicorn src.main:app --reload
 ```
 
-### Paso 3: Abre tu navegador
+Backend corriendo en: http://localhost:8000
 
+#### Frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
-http://localhost:8000/docs
-```
 
-### Paso 4: Prueba el chatbot
+Frontend corriendo en: http://localhost:3000
 
-En la interfaz de Swagger, prueba el endpoint `/api/v1/chat`:
+### Paso 3: Prueba el chatbot
+
+**Desde el frontend**: Abre http://localhost:3000 y chatea directamente
+
+**Desde la API**: http://localhost:8000/docs - endpoint `/api/v1/chat`:
 
 ```json
 {
   "message": "Busca información sobre Elden Ring y dime qué opinan los jugadores",
-  "use_tools": true
+  "conversation_history": []
 }
 ```
 
 ## 🧪 Verificar que Funciona
 
-Ya probamos que Steam API funciona:
+El chatbot en producción ya ha sido probado:
 
 ```
-[TESTS REALIZADOS]
-✅ Búsqueda de juegos
-✅ Detalles de Elden Ring
-✅ 19,769 jugadores online
-✅ Precio: 59,99€
-✅ Fecha: 24 Feb, 2022
+✅ Frontend desplegado en Railway
+✅ Backend API funcionando
+✅ Claude Sonnet 4.5 integrado
+✅ Steam API conectada
+✅ 5 herramientas de IA funcionando
+✅ Conversaciones fluidas y naturales
 ```
 
 ## 📊 Qué Puedes Preguntar
 
+Ejemplos de consultas que el chatbot puede manejar:
+
 ```
-"Busca Baldur's Gate 3"
+"Busca Baldur's Gate 3 y dame detalles"
 "¿Qué opinan los jugadores sobre Cyberpunk 2077?"
 "Recomiéndame juegos similares a Dark Souls"
+"Compara Elden Ring con Dark Souls 3"
+"Búscame juegos de terror indie"
 "¿Qué tan difícil es Sekiro según las reseñas?"
-"Dame información sobre Hollow Knight"
+"Dame información sobre Hollow Knight: precio, reseñas y jugadores"
+"¿Cuáles son los mejores RPG de acción en Steam?"
 ```
 
 ## ⚡ Solución de Problemas
 
-### Error: "Module not found"
+### Error: "Module not found" (Backend)
 ```bash
+cd backend
 pip install -r requirements.txt
 ```
 
-### Error: "Anthropic API key"
-- Verifica que tu key esté en `.env`
-- Sin espacios ni comillas extras
-
-### Error: "Redis connection failed"
-- Es NORMAL - El chatbot funciona sin Redis
-- Usa caché en memoria automáticamente
-
-### Puerto 8000 ocupado
+### Error: "Cannot find module" (Frontend)
 ```bash
-python -m uvicorn src.main:app --port 8001
+cd frontend
+npm install
 ```
 
-## 🎮 Cuando Obtengas Steam API Key
+### Error: "Anthropic API key"
+- Verifica que tu key esté en `backend/.env`
+- Sin espacios ni comillas extras
+- Formato: `ANTHROPIC_API_KEY=sk-ant-...`
 
-1. Edita `.env`
-2. Descomenta la línea:
+### Error: "CORS" o "Network Error"
+- Asegúrate que el backend esté corriendo en puerto 8000
+- El frontend está configurado para conectarse a `http://localhost:8000`
+- En producción, verifica las variables de entorno en Railway
+
+### Puerto ocupado
+```bash
+# Backend en otro puerto
+python -m uvicorn src.main:app --port 8001
+
+# Frontend en otro puerto
+npm run dev -- -p 3001
+```
+
+## 🎮 Steam API Key (Opcional)
+
+La Steam API Key es opcional. La mayoría de funciones trabajan sin ella usando endpoints públicos.
+
+Si quieres agregarla:
+
+1. Obtén tu key en: https://steamcommunity.com/dev/apikey
+2. Edita `backend/.env`
+3. Descomenta la línea:
    ```env
    STEAM_API_KEY=tu_key_aqui
    ```
-3. Reinicia el servidor
+4. Reinicia el backend
 
 ## 📚 Documentación Completa
 
 - **Guía rápida**: [QUICKSTART.md](QUICKSTART.md)
-- **Readme completo**: [README.md](README.md)
 - **Deploy**: [DEPLOYMENT.md](DEPLOYMENT.md)
-- **Arquitectura**: [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Resumen del proyecto**: [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)
 
-## 🚢 Deploy en Railway
+## 🚢 Estado del Deploy
 
-Cuando quieras deployar:
+**¡YA ESTÁ DESPLEGADO EN RAILWAY!**
+
+- **Backend**: https://videogames-chatbot-production.up.railway.app
+- **Frontend**: https://videogames-chatbot-frontend.up.railway.app
+
+Para redesplegar cambios:
 
 ```bash
+# Instalar Railway CLI
 npm install -g @railway/cli
+
+# Login
 railway login
-railway init
+
+# Link al proyecto existente
+railway link
+
+# Deploy
 railway up
 ```
 
-## ✨ Todo Está Listo
+## ✨ Proyecto Completo
 
-Tu chatbot:
-- ✅ Código completo y funcional
-- ✅ Steam API funcionando (sin key)
-- ✅ Claude AI configurado
-- ✅ RAG con ChromaDB
-- ✅ Caché inteligente
-- ✅ Docker listo
-- ✅ Documentación completa
+Tu chatbot incluye:
+- ✅ **Frontend moderno** con Next.js 15 y React 18
+- ✅ **Backend robusto** con FastAPI y Python 3.11
+- ✅ **IA conversacional** con Claude Sonnet 4.5
+- ✅ **5 herramientas especializadas** para búsqueda y análisis
+- ✅ **Steam API** integrada (funciona sin key)
+- ✅ **Desplegado en producción** en Railway
+- ✅ **Documentación completa**
 
-**¡SOLO EJECUTA Y PRUEBA!** 🎮🤖
+**¡ESTÁ FUNCIONANDO EN PRODUCCIÓN!** 🎮🤖
 
 ---
 
-**Ejecuta**: `python -m uvicorn src.main:app --reload`
-**Visita**: http://localhost:8000/docs
+**Backend Local**: `cd backend && python -m uvicorn src.main:app --reload`
+**Frontend Local**: `cd frontend && npm run dev`
+**Producción**: https://videogames-chatbot-frontend.up.railway.app
