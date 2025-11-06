@@ -4,8 +4,24 @@ Chatbot especializado en videojuegos con integración a Steam API, powered by Cl
 
 ## 🌟 Características
 
+### 🤖 Inteligencia Conversacional
+- **Conversaciones naturales y fluidas** - El chatbot tiene una personalidad gamer real, no robótica
+- **Contexto de conversación** - Recuerda y referencia mensajes anteriores
+- **Flexibilidad inteligente** - Puede discutir géneros, mecánicas y tendencias sin necesitar datos
+- **Uso eficiente de herramientas** - Solo consulta APIs cuando realmente necesita datos específicos
+
+### 🔧 Herramientas del Chatbot
+1. **search_steam_games** - Busca juegos por nombre o palabra clave
+2. **search_games_by_genre** - Búsqueda optimizada por género (horror, indie, RPG, etc.)
+3. **get_game_details** - Información completa de un juego específico
+4. **get_multiple_games_details** - Obtiene datos de múltiples juegos en paralelo (perfecto para comparaciones)
+5. **get_game_reviews** - Reseñas de usuarios y estadísticas de satisfacción
+
+### 🎯 Capacidades Destacadas
 - **Búsqueda de juegos** en la plataforma Steam
 - **Información detallada** sobre videojuegos: descripción, desarrolladores, precios, fechas de lanzamiento, etc.
+- **Recomendaciones inteligentes** por género con una sola consulta
+- **Comparaciones eficientes** entre múltiples juegos
 - **Análisis de reseñas** con IA para determinar:
   - Nivel de satisfacción
   - Dificultad percibida
@@ -15,11 +31,41 @@ Chatbot especializado en videojuegos con integración a Steam API, powered by Cl
 - **RAG (Retrieval Augmented Generation)** con ChromaDB para memoria contextual
 - **Caché inteligente** con Redis para optimizar rendimiento
 - **API REST** robusta con FastAPI
-- **Dockerizado** y listo para desplegar en Railway o AWS
+- **Frontend Next.js** con interfaz moderna y responsive
+- **Dockerizado** y listo para desplegar en Railway
+
+## 🆕 Nuevas Mejoras (v2.0)
+
+### ✨ Conversación Más Natural
+El chatbot ahora tiene una personalidad más humana y conversacional:
+- Habla como un compañero gamer, no como un bot
+- Usa emojis ocasionales para énfasis (🔥, ⭐, 🎮)
+- Puede discutir temas generales sin necesitar herramientas
+- Admite limitaciones honestamente
+- Es entusiasta pero crítico cuando los datos lo muestran
+
+### ⚡ Rendimiento Optimizado
+- **Límite de iteraciones aumentado**: De 5 a 10 para consultas complejas
+- **Nuevas herramientas especializadas**:
+  - `get_multiple_games_details` para comparaciones
+  - `search_games_by_genre` para recomendaciones
+- **Menos llamadas a API**: Herramientas más eficientes reducen iteraciones
+
+### 🎮 Consultas que Ahora Funcionan Perfectamente
+- ✅ "Recomiéndame juegos de terror indie" → 2-3 iteraciones (antes fallaba)
+- ✅ "Compara Cyberpunk 2077 con The Witcher 3" → 2-3 iteraciones (antes fallaba)
+- ✅ "¿Qué opinas de los souls-like?" → Sin herramientas, conversación directa
+- ✅ "Busca juegos parecidos a Hollow Knight" → Búsqueda inteligente con contexto
 
 ## 🏗️ Arquitectura
 
 ```
+┌─────────────────┐
+│   Frontend      │  Next.js + TypeScript
+│  (Next.js)      │
+└────────┬────────┘
+         │
+         ▼
 ┌─────────────────┐
 │   Usuario       │
 └────────┬────────┘
@@ -55,62 +101,81 @@ Chatbot especializado en videojuegos con integración a Steam API, powered by Cl
 ## 📋 Requisitos Previos
 
 - Python 3.11+
+- Node.js 18+ (para frontend)
 - Docker & Docker Compose (opcional pero recomendado)
 - API Key de Anthropic (Claude)
-- API Key de Steam
+- API Key de Steam (opcional, funciona sin ella)
 
 ## 🚀 Instalación y Configuración
 
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Acquarts/videogames-chatbot.git
 cd videogames-chatbot
 ```
 
 ### 2. Obtener API Keys
 
-#### Steam API Key
+#### Steam API Key (Opcional)
 1. Visita https://steamcommunity.com/dev/apikey
 2. Inicia sesión con tu cuenta de Steam
 3. Registra un dominio (puedes usar `localhost` para desarrollo)
 4. Copia tu API Key
 
-#### Anthropic API Key (Claude)
+#### Anthropic API Key (Claude) - Requerida
 1. Visita https://console.anthropic.com/
 2. Crea una cuenta o inicia sesión
 3. Ve a "API Keys" en tu dashboard
 4. Genera una nueva API key
 5. Copia tu API key
 
-### 3. Configurar variables de entorno
+### 3. Configurar Backend
 
 ```bash
+cd backend
 cp .env.example .env
 ```
 
-Edita `.env` y agrega tus API keys:
+Edita `.env` y agrega tu API key de Claude:
 
 ```env
 ANTHROPIC_API_KEY=tu_api_key_de_claude
-STEAM_API_KEY=tu_api_key_de_steam
+STEAM_API_KEY=tu_api_key_de_steam  # Opcional
 ```
 
-### 4. Instalar dependencias
+### 4. Configurar Frontend
+
+```bash
+cd frontend
+cp .env.local.example .env.local
+```
+
+Edita `.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+### 5. Instalar dependencias
 
 #### Opción A: Con Docker (Recomendado)
 
 ```bash
-# Desarrollo con hot reload
-docker-compose -f docker-compose.dev.yml up
-
-# Producción
+# Desde la raíz del proyecto
 docker-compose up -d
 ```
 
-#### Opción B: Local con Python
+Frontend: http://localhost:3000
+Backend: http://localhost:8000
+API Docs: http://localhost:8000/docs
 
+#### Opción B: Local con Python y Node.js
+
+**Backend:**
 ```bash
+cd backend
+
 # Crear entorno virtual
 python -m venv venv
 
@@ -125,6 +190,17 @@ pip install -r requirements.txt
 
 # Ejecutar aplicación
 python -m uvicorn src.main:app --reload
+```
+
+**Frontend:**
+```bash
+cd frontend
+
+# Instalar dependencias
+npm install
+
+# Ejecutar en desarrollo
+npm run dev
 ```
 
 ## 📖 Uso de la API
@@ -146,7 +222,7 @@ POST /api/v1/chat
 
 ```json
 {
-  "message": "¿Cuáles son los mejores juegos de estrategia de 2024?",
+  "message": "Recomiéndame juegos de terror indie",
   "conversation_history": [],
   "use_tools": true
 }
@@ -204,52 +280,64 @@ curl -X POST "http://localhost:8000/api/v1/games/search" \
 curl -X POST "http://localhost:8000/api/v1/chat" \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "¿Qué opina la gente sobre Baldurs Gate 3?",
+    "message": "Compara Cyberpunk 2077 con The Witcher 3",
     "use_tools": true
   }'
 ```
 
-## 🚀 Despliegue
+## 🎨 Frontend
 
-### Railway
+El frontend está construido con Next.js 14, TypeScript y Tailwind CSS.
 
-1. **Crear proyecto en Railway**
-   ```bash
-   # Instalar Railway CLI
-   npm install -g @railway/cli
+### Características:
+- ✅ Chat interface moderna y responsive
+- ✅ Markdown rendering para respuestas del bot
+- ✅ Historial de conversación
+- ✅ Botones de sugerencias predefinidas
+- ✅ Loading states y error handling
+- ✅ Dark mode support
+- ✅ Animaciones fluidas
 
-   # Login
-   railway login
-
-   # Iniciar proyecto
-   railway init
-   ```
-
-2. **Configurar variables de entorno en Railway**
-   - Ve a tu proyecto en https://railway.app
-   - Settings → Variables
-   - Agrega todas las variables de `.env`
-
-3. **Desplegar**
-   ```bash
-   railway up
-   ```
-
-### AWS (ECS/Fargate)
-
-El proyecto está preparado para AWS con las siguientes configuraciones:
+### Desarrollo del Frontend:
 
 ```bash
-# Build imagen
-docker build -t videogames-chatbot .
+cd frontend
+npm run dev      # Development
+npm run build    # Build para producción
+npm start        # Producción
+npm run lint     # Linting
+```
 
-# Tag para ECR
-docker tag videogames-chatbot:latest <tu-ecr-repo>:latest
+## 🚀 Despliegue
 
-# Push a ECR
-docker push <tu-ecr-repo>:latest
+### Railway (Recomendado)
 
-# Desplegar usando ECS/Fargate (requiere configuración adicional de AWS)
+El proyecto está configurado para desplegarse automáticamente en Railway:
+
+**Backend:**
+1. Crea un nuevo proyecto en Railway
+2. Conecta tu repositorio de GitHub
+3. Railway detectará `backend/` automáticamente
+4. Configura las variables de entorno en Railway
+5. Deploy automático en cada push
+
+**Frontend:**
+1. Crea otro servicio en el mismo proyecto Railway
+2. Configura el root directory: `frontend`
+3. Agrega variable: `NEXT_PUBLIC_API_URL=https://tu-backend.railway.app`
+4. Deploy automático
+
+### Docker Compose
+
+```bash
+# Producción
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f
+
+# Detener
+docker-compose down
 ```
 
 ## 🛠️ Desarrollo
@@ -258,72 +346,93 @@ docker push <tu-ecr-repo>:latest
 
 ```
 videogames-chatbot/
-├── src/
-│   ├── api/              # Endpoints de FastAPI
-│   │   ├── models.py     # Modelos Pydantic
-│   │   └── routes.py     # Rutas de la API
-│   ├── config/           # Configuración
-│   │   └── settings.py   # Variables de entorno
-│   ├── services/         # Lógica de negocio
-│   │   ├── steam_service.py      # Integración Steam API
-│   │   ├── rag_service.py        # Sistema RAG con ChromaDB
-│   │   └── chatbot_service.py    # Servicio principal con Claude
-│   ├── utils/            # Utilidades
-│   │   ├── logger.py     # Sistema de logging
-│   │   └── cache.py      # Gestión de caché
-│   └── main.py           # Punto de entrada
-├── chroma_db/            # Base de datos vectorial (generado)
-├── logs/                 # Logs de aplicación (generado)
-├── tests/                # Tests unitarios
-├── .env.example          # Ejemplo de variables de entorno
-├── .gitignore
-├── Dockerfile            # Dockerfile multi-stage
-├── docker-compose.yml    # Compose para producción
-├── docker-compose.dev.yml # Compose para desarrollo
-├── railway.json          # Configuración Railway
-├── requirements.txt      # Dependencias Python
-└── README.md
+├── backend/              # Backend FastAPI
+│   ├── src/
+│   │   ├── api/          # Endpoints de FastAPI
+│   │   ├── config/       # Configuración
+│   │   ├── services/     # Lógica de negocio
+│   │   │   ├── steam_service.py
+│   │   │   ├── rag_service.py
+│   │   │   └── chatbot_service.py  # 🆕 Mejorado con personalidad
+│   │   ├── utils/        # Utilidades
+│   │   └── main.py       # Punto de entrada
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── frontend/             # Frontend Next.js
+│   ├── app/              # App router
+│   ├── components/       # React components
+│   ├── lib/              # Utilities
+│   ├── Dockerfile
+│   └── package.json
+│
+├── docker-compose.yml
+├── README.md
+└── DEPLOYMENT.md
 ```
 
 ### Ejecutar Tests
 
 ```bash
-# Con pytest
+# Backend
+cd backend
 pytest
 
 # Con cobertura
 pytest --cov=src tests/
+
+# Frontend
+cd frontend
+npm test
 ```
 
 ### Código de Calidad
 
 ```bash
-# Formatear código
+# Backend - Formatear código
+cd backend
 black src/
 
-# Linting
+# Backend - Linting
 flake8 src/
+
+# Frontend - Linting
+cd frontend
+npm run lint
 ```
 
 ## 📊 Características Técnicas
 
 ### Tecnologías
 
-- **Framework**: FastAPI
-- **LLM**: Claude 3.5 Sonnet (Anthropic)
-- **Orquestación**: LangChain
-- **Vector Database**: ChromaDB
-- **Cache**: Redis
-- **API Externa**: Steam Web API
-- **Containerización**: Docker
+**Backend:**
+- Framework: FastAPI
+- LLM: Claude 3.5 Sonnet (Anthropic)
+- Orquestación: LangChain
+- Vector Database: ChromaDB
+- Cache: Redis
+- API Externa: Steam Web API
+
+**Frontend:**
+- Framework: Next.js 14
+- Language: TypeScript
+- Styling: Tailwind CSS
+- UI Components: Shadcn/ui
+- Markdown: React Markdown
+
+**DevOps:**
+- Containerización: Docker
+- Deployment: Railway
+- CI/CD: GitHub Actions (opcional)
 
 ### Optimizaciones
 
 - **Caché multinivel**: Redis para API calls, ChromaDB para embeddings
-- **Dockerfile multi-stage**: Imagen optimizada ~200MB
+- **Dockerfile multi-stage**: Imagen optimizada ~200MB (backend), ~300MB (frontend)
 - **Async/await**: Operaciones asíncronas para mejor rendimiento
 - **Connection pooling**: Reutilización de conexiones HTTP
 - **Rate limiting**: Prevención de sobrecarga de APIs
+- **Tool calling inteligente**: Reduce iteraciones y costos de API
 
 ### Escalabilidad
 
@@ -331,7 +440,7 @@ flake8 src/
 - Preparado para réplicas horizontales
 - Base de datos vectorial persistente
 - Compatible con load balancers
-- Preparado para migración a AWS
+- Frontend estático optimizado con Next.js
 
 ## 🔒 Seguridad
 
@@ -340,16 +449,19 @@ flake8 src/
 - Health checks configurados
 - Validación de inputs con Pydantic
 - Logging de errores y auditoría
+- CORS configurado
+- API key validation
 
 ## 📝 Próximas Mejoras
 
-- [ ] Frontend web con React/Vue
 - [ ] Autenticación de usuarios
 - [ ] Webhooks para actualizaciones de Steam
 - [ ] Soporte para múltiples idiomas
 - [ ] Integración con más plataformas (Epic, GOG, etc.)
-- [ ] Sistema de recomendaciones personalizado
+- [ ] Sistema de recomendaciones personalizado con ML
 - [ ] Analytics y métricas de uso
+- [ ] Mobile app (React Native)
+- [ ] Voice interface
 
 ## 🤝 Contribuciones
 
@@ -367,7 +479,7 @@ Este proyecto está bajo la licencia MIT. Ver `LICENSE` para más información.
 
 ## 👤 Autor
 
-Tu Nombre
+Adrián - [GitHub](https://github.com/Acquarts)
 
 ## 🙏 Agradecimientos
 
@@ -375,7 +487,11 @@ Tu Nombre
 - [Steam](https://steamcommunity.com/dev) por su API pública
 - [LangChain](https://www.langchain.com/) por el framework
 - [ChromaDB](https://www.trychroma.com/) por la base de datos vectorial
+- [Next.js](https://nextjs.org/) por el framework frontend
+- [Railway](https://railway.app/) por el hosting
 
 ---
 
 **¿Preguntas o problemas?** Abre un issue en GitHub.
+
+**¡Disfruta construyendo con Videogames Chatbot!** 🎮🤖

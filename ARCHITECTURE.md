@@ -165,15 +165,25 @@ The Videogames Chatbot is a microservices-oriented application that combines:
 ```
 
 **Features**:
-- LangChain integration
-- Tool calling (Steam API, RAG search)
-- Conversation history management
-- Agent executor with retry logic
+- LangChain integration with direct tool calling
+- Enhanced conversational personality (gamer-friendly, natural)
+- Intelligent tool usage (only when needed for specific data)
+- Conversation history management (last 10 messages)
+- Agent executor with configurable iterations (10 max)
+- Parallel tool execution for efficiency
+- Flexible response generation (can discuss general gaming topics without tools)
 
-**Tools Available to Agent**:
-1. **search_games**: Find games on Steam
-2. **get_game_details**: Get detailed game data
-3. **search_knowledge**: Query vector database
+**Tools Available to Agent** (v2.0 - Optimized):
+1. **search_steam_games**: Find games on Steam by name
+2. **search_games_by_genre**: Efficient genre-based search (horror, indie, RPG) - Returns top 5 with details
+3. **get_game_details**: Get detailed game data for ONE specific game
+4. **get_multiple_games_details**: Get data for MULTIPLE games at once (up to 5) - Perfect for comparisons
+5. **get_game_reviews**: Get user reviews and sentiment statistics
+
+**Key Improvements**:
+- Increased max iterations from 5 to 10 for complex queries
+- New specialized tools reduce API calls significantly
+- More natural conversation flow with enhanced system prompt
 
 ### 4. Utilities Layer (`src/utils/`)
 
