@@ -32,7 +32,7 @@ Chatbot especializado en videojuegos con integración a Steam API, powered by Cl
 - **Caché inteligente** con Redis para optimizar rendimiento
 - **API REST** robusta con FastAPI
 - **Frontend Next.js** con interfaz moderna y responsive
-- **Dockerizado** y listo para desplegar en Railway
+- **Listo para desplegar** en Railway con auto-deploy
 
 ## 🆕 Nuevas Mejoras (v2.0)
 
@@ -102,8 +102,7 @@ El chatbot ahora tiene una personalidad más humana y conversacional:
 
 - Python 3.11+
 - Node.js 18+ (para frontend)
-- Docker & Docker Compose (opcional pero recomendado)
-- API Key de Anthropic (Claude)
+- API Key de Anthropic (Claude) - Requerida
 - API Key de Steam (opcional, funciona sin ella)
 
 ## 🚀 Instalación y Configuración
@@ -157,20 +156,7 @@ Edita `.env.local`:
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-### 5. Instalar dependencias
-
-#### Opción A: Con Docker (Recomendado)
-
-```bash
-# Desde la raíz del proyecto
-docker-compose up -d
-```
-
-Frontend: http://localhost:3000
-Backend: http://localhost:8000
-API Docs: http://localhost:8000/docs
-
-#### Opción B: Local con Python y Node.js
+### 5. Instalar y ejecutar
 
 **Backend:**
 ```bash
@@ -327,18 +313,7 @@ El proyecto está configurado para desplegarse automáticamente en Railway:
 3. Agrega variable: `NEXT_PUBLIC_API_URL=https://tu-backend.railway.app`
 4. Deploy automático
 
-### Docker Compose
-
-```bash
-# Producción
-docker-compose up -d
-
-# Ver logs
-docker-compose logs -f
-
-# Detener
-docker-compose down
-```
+Más detalles en [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ## 🛠️ Desarrollo
 
@@ -356,19 +331,18 @@ videogames-chatbot/
 │   │   │   └── chatbot_service.py  # 🆕 Mejorado con personalidad
 │   │   ├── utils/        # Utilidades
 │   │   └── main.py       # Punto de entrada
-│   ├── Dockerfile
 │   └── requirements.txt
 │
 ├── frontend/             # Frontend Next.js
 │   ├── app/              # App router
 │   ├── components/       # React components
 │   ├── lib/              # Utilities
-│   ├── Dockerfile
 │   └── package.json
 │
-├── docker-compose.yml
 ├── README.md
-└── DEPLOYMENT.md
+├── DEPLOYMENT.md
+├── QUICKSTART.md
+└── PROJECT_SUMMARY.md
 ```
 
 ### Ejecutar Tests
@@ -421,18 +395,17 @@ npm run lint
 - Markdown: React Markdown
 
 **DevOps:**
-- Containerización: Docker
-- Deployment: Railway
-- CI/CD: GitHub Actions (opcional)
+- Deployment: Railway (auto-deploy desde GitHub)
+- Build System: Nixpacks (automático en Railway)
 
 ### Optimizaciones
 
-- **Caché multinivel**: Redis para API calls, ChromaDB para embeddings
-- **Dockerfile multi-stage**: Imagen optimizada ~200MB (backend), ~300MB (frontend)
+- **Caché multinivel**: Caché en memoria, ChromaDB para embeddings (deshabilitado actualmente)
 - **Async/await**: Operaciones asíncronas para mejor rendimiento
 - **Connection pooling**: Reutilización de conexiones HTTP
 - **Rate limiting**: Prevención de sobrecarga de APIs
 - **Tool calling inteligente**: Reduce iteraciones y costos de API
+- **Despliegue eficiente**: Railway maneja builds automáticamente
 
 ### Escalabilidad
 
@@ -445,12 +418,12 @@ npm run lint
 ## 🔒 Seguridad
 
 - Variables de entorno para secrets
-- Usuario no-root en Docker
 - Health checks configurados
 - Validación de inputs con Pydantic
 - Logging de errores y auditoría
 - CORS configurado
 - API key validation
+- Deploy seguro en Railway con SSL/HTTPS automático
 
 ## 📝 Próximas Mejoras
 

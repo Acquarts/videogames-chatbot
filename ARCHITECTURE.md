@@ -313,10 +313,11 @@ Search results → 1 hour
   - Timeout management
 
 ### Deployment
-- **Docker**
-  - Multi-stage builds
-  - Optimized images
-  - Container orchestration
+- **Railway**
+  - Auto-deploy desde GitHub
+  - Nixpacks build system
+  - SSL/HTTPS automático
+  - Variables de entorno por servicio
 
 - **Uvicorn**
   - ASGI server
@@ -430,11 +431,11 @@ Scale-down: -1 instance (cooldown 5 min)
 - ✅ AWS Secrets Manager (production)
 - ✅ Validation at startup
 
-### Container Security
-- ✅ Non-root user
-- ✅ Multi-stage builds
-- ✅ Minimal base image (Python slim)
-- ✅ No secrets in image layers
+### Deployment Security
+- ✅ Railway platform security
+- ✅ SSL/HTTPS automático
+- ✅ Variables de entorno seguras
+- ✅ No secrets en código
 
 ### CORS Configuration
 - ⚠️ Currently: `allow_origins=["*"]`
@@ -568,13 +569,13 @@ ERROR: Error messages
 
 ---
 
-## Migration Path: Railway → AWS
+## Migration Path: Railway → AWS (Futuro)
 
 ### Phase 1: Preparation
-1. Test Docker image locally
-2. Optimize for production
-3. Set up AWS infrastructure (IaC with Terraform)
-4. Migrate secrets to Secrets Manager
+1. Evaluar necesidad de migración (actualmente Railway es suficiente)
+2. Set up AWS infrastructure (IaC with Terraform)
+3. Migrate secrets to Secrets Manager
+4. Crear Dockerfiles para deployment en ECS
 
 ### Phase 2: Database Migration
 1. Export ChromaDB data
