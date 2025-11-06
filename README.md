@@ -381,7 +381,7 @@ npm run lint
 
 **Backend:**
 - Framework: FastAPI
-- LLM: Claude 3.5 Sonnet (Anthropic)
+- LLM: Claude 4.5 Sonnet (Anthropic)
 - Orquestación: LangChain
 - Vector Database: ChromaDB
 - Cache: Redis
