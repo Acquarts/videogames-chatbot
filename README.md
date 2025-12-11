@@ -1,63 +1,63 @@
 # 🎮 Videogames Chatbot
 
-Chatbot especializado en videojuegos con integración a Steam API, powered by Claude AI y RAG (Retrieval Augmented Generation).
+Specialized videogames chatbot with Steam API integration, powered by Claude AI and RAG (Retrieval Augmented Generation).
 
-## 🌟 Características
+## 🌟 Features
 
-### 🤖 Inteligencia Conversacional
-- **Conversaciones naturales y fluidas** - El chatbot tiene una personalidad gamer real, no robótica
-- **Contexto de conversación** - Recuerda y referencia mensajes anteriores
-- **Flexibilidad inteligente** - Puede discutir géneros, mecánicas y tendencias sin necesitar datos
-- **Uso eficiente de herramientas** - Solo consulta APIs cuando realmente necesita datos específicos
+### 🤖 Conversational Intelligence
+- **Natural and fluid conversations** - The chatbot has a real gamer personality, not robotic
+- **Conversation context** - Remembers and references previous messages
+- **Intelligent flexibility** - Can discuss genres, mechanics and trends without needing data
+- **Efficient tool usage** - Only queries APIs when it really needs specific data
 
-### 🔧 Herramientas del Chatbot
-1. **search_steam_games** - Busca juegos por nombre o palabra clave
-2. **search_games_by_genre** - Búsqueda optimizada por género (horror, indie, RPG, etc.)
-3. **get_game_details** - Información completa de un juego específico
-4. **get_multiple_games_details** - Obtiene datos de múltiples juegos en paralelo (perfecto para comparaciones)
-5. **get_game_reviews** - Reseñas de usuarios y estadísticas de satisfacción
+### 🔧 Chatbot Tools
+1. **search_steam_games** - Search games by name or keyword
+2. **search_games_by_genre** - Optimized search by genre (horror, indie, RPG, etc.)
+3. **get_game_details** - Complete information about a specific game
+4. **get_multiple_games_details** - Gets data from multiple games in parallel (perfect for comparisons)
+5. **get_game_reviews** - User reviews and satisfaction statistics
 
-### 🎯 Capacidades Destacadas
-- **Búsqueda de juegos** en la plataforma Steam
-- **Información detallada** sobre videojuegos: descripción, desarrolladores, precios, fechas de lanzamiento, etc.
-- **Recomendaciones inteligentes** por género con una sola consulta
-- **Comparaciones eficientes** entre múltiples juegos
-- **Análisis de reseñas** con IA para determinar:
-  - Nivel de satisfacción
-  - Dificultad percibida
-  - Originalidad
-  - Calidad artística
-  - Aspectos más valorados y criticados
-- **RAG (Retrieval Augmented Generation)** con ChromaDB para memoria contextual
-- **Caché inteligente** con Redis para optimizar rendimiento
-- **API REST** robusta con FastAPI
-- **Frontend Next.js** con interfaz moderna y responsive
-- **Listo para desplegar** en Railway con auto-deploy
+### 🎯 Standout Capabilities
+- **Game search** on the Steam platform
+- **Detailed information** about videogames: description, developers, prices, release dates, etc.
+- **Intelligent recommendations** by genre with a single query
+- **Efficient comparisons** between multiple games
+- **Review analysis** with AI to determine:
+  - Satisfaction level
+  - Perceived difficulty
+  - Originality
+  - Artistic quality
+  - Most valued and criticized aspects
+- **RAG (Retrieval Augmented Generation)** with ChromaDB for contextual memory
+- **Intelligent caching** with Redis to optimize performance
+- **Robust REST API** with FastAPI
+- **Next.js Frontend** with modern and responsive interface
+- **Ready to deploy** on Railway with auto-deploy
 
-## 🆕 Nuevas Mejoras (v2.0)
+## 🆕 New Improvements (v2.0)
 
-### ✨ Conversación Más Natural
-El chatbot ahora tiene una personalidad más humana y conversacional:
-- Habla como un compañero gamer, no como un bot
-- Usa emojis ocasionales para énfasis (🔥, ⭐, 🎮)
-- Puede discutir temas generales sin necesitar herramientas
-- Admite limitaciones honestamente
-- Es entusiasta pero crítico cuando los datos lo muestran
+### ✨ More Natural Conversation
+The chatbot now has a more human and conversational personality:
+- Talks like a fellow gamer, not like a bot
+- Uses occasional emojis for emphasis (🔥, ⭐, 🎮)
+- Can discuss general topics without needing tools
+- Admits limitations honestly
+- Is enthusiastic but critical when data shows it
 
-### ⚡ Rendimiento Optimizado
-- **Límite de iteraciones aumentado**: De 5 a 10 para consultas complejas
-- **Nuevas herramientas especializadas**:
-  - `get_multiple_games_details` para comparaciones
-  - `search_games_by_genre` para recomendaciones
-- **Menos llamadas a API**: Herramientas más eficientes reducen iteraciones
+### ⚡ Optimized Performance
+- **Increased iteration limit**: From 5 to 10 for complex queries
+- **New specialized tools**:
+  - `get_multiple_games_details` for comparisons
+  - `search_games_by_genre` for recommendations
+- **Fewer API calls**: More efficient tools reduce iterations
 
-### 🎮 Consultas que Ahora Funcionan Perfectamente
-- ✅ "Recomiéndame juegos de terror indie" → 2-3 iteraciones (antes fallaba)
-- ✅ "Compara Cyberpunk 2077 con The Witcher 3" → 2-3 iteraciones (antes fallaba)
-- ✅ "¿Qué opinas de los souls-like?" → Sin herramientas, conversación directa
-- ✅ "Busca juegos parecidos a Hollow Knight" → Búsqueda inteligente con contexto
+### 🎮 Queries That Now Work Perfectly
+- ✅ "Recommend indie horror games" → 2-3 iterations (previously failed)
+- ✅ "Compare Cyberpunk 2077 with The Witcher 3" → 2-3 iterations (previously failed)
+- ✅ "What do you think about souls-like games?" → No tools, direct conversation
+- ✅ "Find games similar to Hollow Knight" → Intelligent search with context
 
-## 🏗️ Arquitectura
+## 🏗️ Architecture
 
 ```
 ┌─────────────────┐
@@ -67,7 +67,7 @@ El chatbot ahora tiene una personalidad más humana y conversacional:
          │
          ▼
 ┌─────────────────┐
-│   Usuario       │
+│   User          │
 └────────┬────────┘
          │
          ▼
@@ -98,83 +98,83 @@ El chatbot ahora tiene una personalidad más humana y conversacional:
 └──────────────┘
 ```
 
-## 📋 Requisitos Previos
+## 📋 Prerequisites
 
 - Python 3.11+
-- Node.js 18+ (para frontend)
-- API Key de Anthropic (Claude) - Requerida
-- API Key de Steam (opcional, funciona sin ella)
+- Node.js 18+ (for frontend)
+- Anthropic API Key (Claude) - Required
+- Steam API Key (optional, works without it)
 
-## 🚀 Instalación y Configuración
+## 🚀 Installation and Setup
 
-### 1. Clonar el repositorio
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Acquarts/videogames-chatbot.git
 cd videogames-chatbot
 ```
 
-### 2. Obtener API Keys
+### 2. Get API Keys
 
-#### Steam API Key (Opcional)
-1. Visita https://steamcommunity.com/dev/apikey
-2. Inicia sesión con tu cuenta de Steam
-3. Registra un dominio (puedes usar `localhost` para desarrollo)
-4. Copia tu API Key
+#### Steam API Key (Optional)
+1. Visit https://steamcommunity.com/dev/apikey
+2. Log in with your Steam account
+3. Register a domain (you can use `localhost` for development)
+4. Copy your API Key
 
-#### Anthropic API Key (Claude) - Requerida
-1. Visita https://console.anthropic.com/
-2. Crea una cuenta o inicia sesión
-3. Ve a "API Keys" en tu dashboard
-4. Genera una nueva API key
-5. Copia tu API key
+#### Anthropic API Key (Claude) - Required
+1. Visit https://console.anthropic.com/
+2. Create an account or log in
+3. Go to "API Keys" in your dashboard
+4. Generate a new API key
+5. Copy your API key
 
-### 3. Configurar Backend
+### 3. Configure Backend
 
 ```bash
 cd backend
 cp .env.example .env
 ```
 
-Edita `.env` y agrega tu API key de Claude:
+Edit `.env` and add your Claude API key:
 
 ```env
-ANTHROPIC_API_KEY=tu_api_key_de_claude
-STEAM_API_KEY=tu_api_key_de_steam  # Opcional
+ANTHROPIC_API_KEY=your_claude_api_key
+STEAM_API_KEY=your_steam_api_key  # Optional
 ```
 
-### 4. Configurar Frontend
+### 4. Configure Frontend
 
 ```bash
 cd frontend
 cp .env.local.example .env.local
 ```
 
-Edita `.env.local`:
+Edit `.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-### 5. Instalar y ejecutar
+### 5. Install and run
 
 **Backend:**
 ```bash
 cd backend
 
-# Crear entorno virtual
+# Create virtual environment
 python -m venv venv
 
-# Activar entorno virtual
+# Activate virtual environment
 # Windows
 venv\Scripts\activate
 # Linux/Mac
 source venv/bin/activate
 
-# Instalar dependencias
+# Install dependencies
 pip install -r requirements.txt
 
-# Ejecutar aplicación
+# Run application
 python -m uvicorn src.main:app --reload
 ```
 
@@ -182,25 +182,25 @@ python -m uvicorn src.main:app --reload
 ```bash
 cd frontend
 
-# Instalar dependencias
+# Install dependencies
 npm install
 
-# Ejecutar en desarrollo
+# Run in development
 npm run dev
 ```
 
-## 📖 Uso de la API
+## 📖 API Usage
 
-La API estará disponible en `http://localhost:8000`
+The API will be available at `http://localhost:8000`
 
-### Documentación interactiva
+### Interactive Documentation
 
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
-### Endpoints Principales
+### Main Endpoints
 
-#### 1. Chat con el bot
+#### 1. Chat with the bot
 
 ```bash
 POST /api/v1/chat
@@ -208,13 +208,13 @@ POST /api/v1/chat
 
 ```json
 {
-  "message": "Recomiéndame juegos de terror indie",
+  "message": "Recommend indie horror games",
   "conversation_history": [],
   "use_tools": true
 }
 ```
 
-#### 2. Buscar juegos
+#### 2. Search games
 
 ```bash
 POST /api/v1/games/search
@@ -227,7 +227,7 @@ POST /api/v1/games/search
 }
 ```
 
-#### 3. Obtener detalles de un juego
+#### 3. Get game details
 
 ```bash
 POST /api/v1/games/details
@@ -239,7 +239,7 @@ POST /api/v1/games/details
 }
 ```
 
-#### 4. Analizar sentimiento de un juego
+#### 4. Analyze game sentiment
 
 ```bash
 POST /api/v1/games/analyze
@@ -251,89 +251,89 @@ POST /api/v1/games/analyze
 }
 ```
 
-### Ejemplos con cURL
+### Examples with cURL
 
 ```bash
 # Health check
 curl http://localhost:8000/api/v1/health
 
-# Buscar un juego
+# Search for a game
 curl -X POST "http://localhost:8000/api/v1/games/search" \
   -H "Content-Type: application/json" \
   -d '{"query":"Baldurs Gate 3", "limit":5}'
 
-# Chat con el bot
+# Chat with the bot
 curl -X POST "http://localhost:8000/api/v1/chat" \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "Compara Cyberpunk 2077 con The Witcher 3",
+    "message": "Compare Cyberpunk 2077 with The Witcher 3",
     "use_tools": true
   }'
 ```
 
 ## 🎨 Frontend
 
-El frontend está construido con Next.js 14, TypeScript y Tailwind CSS.
+The frontend is built with Next.js 14, TypeScript and Tailwind CSS.
 
-### Características:
-- ✅ Chat interface moderna y responsive
-- ✅ Markdown rendering para respuestas del bot
-- ✅ Historial de conversación
-- ✅ Botones de sugerencias predefinidas
-- ✅ Loading states y error handling
+### Features:
+- ✅ Modern and responsive chat interface
+- ✅ Markdown rendering for bot responses
+- ✅ Conversation history
+- ✅ Predefined suggestion buttons
+- ✅ Loading states and error handling
 - ✅ Dark mode support
-- ✅ Animaciones fluidas
+- ✅ Smooth animations
 
-### Desarrollo del Frontend:
+### Frontend Development:
 
 ```bash
 cd frontend
 npm run dev      # Development
-npm run build    # Build para producción
-npm start        # Producción
+npm run build    # Build for production
+npm start        # Production
 npm run lint     # Linting
 ```
 
-## 🚀 Despliegue
+## 🚀 Deployment
 
-### Railway (Recomendado)
+### Railway (Recommended)
 
-El proyecto está configurado para desplegarse automáticamente en Railway:
+The project is configured to deploy automatically on Railway:
 
 **Backend:**
-1. Crea un nuevo proyecto en Railway
-2. Conecta tu repositorio de GitHub
-3. Railway detectará `backend/` automáticamente
-4. Configura las variables de entorno en Railway
-5. Deploy automático en cada push
+1. Create a new project on Railway
+2. Connect your GitHub repository
+3. Railway will detect `backend/` automatically
+4. Configure environment variables in Railway
+5. Automatic deploy on each push
 
 **Frontend:**
-1. Crea otro servicio en el mismo proyecto Railway
-2. Configura el root directory: `frontend`
-3. Agrega variable: `NEXT_PUBLIC_API_URL=https://tu-backend.railway.app`
-4. Deploy automático
+1. Create another service in the same Railway project
+2. Configure the root directory: `frontend`
+3. Add variable: `NEXT_PUBLIC_API_URL=https://your-backend.railway.app`
+4. Automatic deploy
 
-Más detalles en [DEPLOYMENT.md](DEPLOYMENT.md)
+More details in [DEPLOYMENT.md](DEPLOYMENT.md)
 
-## 🛠️ Desarrollo
+## 🛠️ Development
 
-### Estructura del Proyecto
+### Project Structure
 
 ```
 videogames-chatbot/
-├── backend/              # Backend FastAPI
+├── backend/              # FastAPI Backend
 │   ├── src/
-│   │   ├── api/          # Endpoints de FastAPI
-│   │   ├── config/       # Configuración
-│   │   ├── services/     # Lógica de negocio
+│   │   ├── api/          # FastAPI Endpoints
+│   │   ├── config/       # Configuration
+│   │   ├── services/     # Business logic
 │   │   │   ├── steam_service.py
 │   │   │   ├── rag_service.py
-│   │   │   └── chatbot_service.py  # 🆕 Mejorado con personalidad
-│   │   ├── utils/        # Utilidades
-│   │   └── main.py       # Punto de entrada
+│   │   │   └── chatbot_service.py  # 🆕 Improved with personality
+│   │   ├── utils/        # Utilities
+│   │   └── main.py       # Entry point
 │   └── requirements.txt
 │
-├── frontend/             # Frontend Next.js
+├── frontend/             # Next.js Frontend
 │   ├── app/              # App router
 │   ├── components/       # React components
 │   ├── lib/              # Utilities
@@ -345,14 +345,14 @@ videogames-chatbot/
 └── PROJECT_SUMMARY.md
 ```
 
-### Ejecutar Tests
+### Run Tests
 
 ```bash
 # Backend
 cd backend
 pytest
 
-# Con cobertura
+# With coverage
 pytest --cov=src tests/
 
 # Frontend
@@ -360,10 +360,10 @@ cd frontend
 npm test
 ```
 
-### Código de Calidad
+### Code Quality
 
 ```bash
-# Backend - Formatear código
+# Backend - Format code
 cd backend
 black src/
 
@@ -375,17 +375,17 @@ cd frontend
 npm run lint
 ```
 
-## 📊 Características Técnicas
+## 📊 Technical Features
 
-### Tecnologías
+### Technologies
 
 **Backend:**
 - Framework: FastAPI
 - LLM: Claude 4.5 Sonnet (Anthropic)
-- Orquestación: LangChain
+- Orchestration: LangChain
 - Vector Database: ChromaDB
 - Cache: Redis
-- API Externa: Steam Web API
+- External API: Steam Web API
 
 **Frontend:**
 - Framework: Next.js 14
@@ -395,76 +395,76 @@ npm run lint
 - Markdown: React Markdown
 
 **DevOps:**
-- Deployment: Railway (auto-deploy desde GitHub)
-- Build System: Nixpacks (automático en Railway)
+- Deployment: Railway (auto-deploy from GitHub)
+- Build System: Nixpacks (automatic on Railway)
 
-### Optimizaciones
+### Optimizations
 
-- **Caché multinivel**: Caché en memoria, ChromaDB para embeddings (deshabilitado actualmente)
-- **Async/await**: Operaciones asíncronas para mejor rendimiento
-- **Connection pooling**: Reutilización de conexiones HTTP
-- **Rate limiting**: Prevención de sobrecarga de APIs
-- **Tool calling inteligente**: Reduce iteraciones y costos de API
-- **Despliegue eficiente**: Railway maneja builds automáticamente
+- **Multi-level cache**: In-memory cache, ChromaDB for embeddings (currently disabled)
+- **Async/await**: Asynchronous operations for better performance
+- **Connection pooling**: HTTP connection reuse
+- **Rate limiting**: Prevention of API overload
+- **Intelligent tool calling**: Reduces iterations and API costs
+- **Efficient deployment**: Railway handles builds automatically
 
-### Escalabilidad
+### Scalability
 
-- Arquitectura sin estado (stateless)
-- Preparado para réplicas horizontales
-- Base de datos vectorial persistente
-- Compatible con load balancers
-- Frontend estático optimizado con Next.js
+- Stateless architecture
+- Ready for horizontal replicas
+- Persistent vector database
+- Compatible with load balancers
+- Static frontend optimized with Next.js
 
-## 🔒 Seguridad
+## 🔒 Security
 
-- Variables de entorno para secrets
-- Health checks configurados
-- Validación de inputs con Pydantic
-- Logging de errores y auditoría
-- CORS configurado
+- Environment variables for secrets
+- Configured health checks
+- Input validation with Pydantic
+- Error logging and auditing
+- Configured CORS
 - API key validation
-- Deploy seguro en Railway con SSL/HTTPS automático
+- Secure deployment on Railway with automatic SSL/HTTPS
 
-## 📝 Próximas Mejoras
+## 📝 Future Improvements
 
-- [ ] Autenticación de usuarios
-- [ ] Webhooks para actualizaciones de Steam
-- [ ] Soporte para múltiples idiomas
-- [ ] Integración con más plataformas (Epic, GOG, etc.)
-- [ ] Sistema de recomendaciones personalizado con ML
-- [ ] Analytics y métricas de uso
+- [ ] User authentication
+- [ ] Webhooks for Steam updates
+- [ ] Multi-language support
+- [ ] Integration with more platforms (Epic, GOG, etc.)
+- [ ] Personalized recommendation system with ML
+- [ ] Usage analytics and metrics
 - [ ] Mobile app (React Native)
 - [ ] Voice interface
 
-## 🤝 Contribuciones
+## 🤝 Contributions
 
-Las contribuciones son bienvenidas! Por favor:
+Contributions are welcome! Please:
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+1. Fork the project
+2. Create a branch for your feature (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📄 Licencia
+## 📄 License
 
-Este proyecto está bajo la licencia MIT. Ver `LICENSE` para más información.
+This project is under the MIT license. See `LICENSE` for more information.
 
-## 👤 Autor
+## 👤 Author
 
 Adrián - [GitHub](https://github.com/Acquarts)
 
-## 🙏 Agradecimientos
+## 🙏 Acknowledgments
 
-- [Anthropic](https://www.anthropic.com/) por Claude AI
-- [Steam](https://steamcommunity.com/dev) por su API pública
-- [LangChain](https://www.langchain.com/) por el framework
-- [ChromaDB](https://www.trychroma.com/) por la base de datos vectorial
-- [Next.js](https://nextjs.org/) por el framework frontend
-- [Railway](https://railway.app/) por el hosting
+- [Anthropic](https://www.anthropic.com/) for Claude AI
+- [Steam](https://steamcommunity.com/dev) for their public API
+- [LangChain](https://www.langchain.com/) for the framework
+- [ChromaDB](https://www.trychroma.com/) for the vector database
+- [Next.js](https://nextjs.org/) for the frontend framework
+- [Railway](https://railway.app/) for hosting
 
 ---
 
-**¿Preguntas o problemas?** Abre un issue en GitHub.
+**Questions or problems?** Open an issue on GitHub.
 
-**¡Disfruta construyendo con Videogames Chatbot!** 🎮🤖
+**Enjoy building with Videogames Chatbot!** 🎮🤖
